@@ -20,7 +20,7 @@ public class Square extends Pane {
     ImageView icon = new ImageView();
     Circle c = new Circle();
 
-   private Piece piece=null;
+    private Piece piece = null;
 
     public Square(String color, Pane parent) {
 
@@ -97,7 +97,5 @@ public class Square extends Pane {
     public void setPiece(Piece piece) {
         this.piece = piece;
     }
-    
-    
 
 }

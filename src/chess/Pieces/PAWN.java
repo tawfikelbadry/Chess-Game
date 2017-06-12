@@ -22,6 +22,7 @@ public class PAWN extends Piece {
             img = PIECES_IMAGES.WHITE_BAWN;
         }
         super.Value = this.value;
+        
 
     }
 

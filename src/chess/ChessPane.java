@@ -194,9 +194,7 @@ public class ChessPane extends GridPane implements EventHandler<MouseEvent> {
                 }
                 //  if the second player is the computer
             } else {
-            //    Game.allAvailbleMovesForBlackPieces();
-             //   Game.minimax(0, Game.white_player);
-             //   PieceMove moveminimax=Game.theMove;
+
                 PieceMove move = Game.bestMove();
 //                
                 System.out.println("piece fromX " + move.getFromLoc().x + "  fromy : " + move.getFromLoc().y);
@@ -206,17 +204,19 @@ public class ChessPane extends GridPane implements EventHandler<MouseEvent> {
                 squares[move.getToLoc().x][move.getToLoc().y].setPiece(move.getPiece());
                 squares[move.getToLoc().x][move.getToLoc().y].setSquareImage(move.getPiece().getImg());
                 squares[move.getFromLoc().x][move.getFromLoc().y].removeImage();
-
+//
                 squares[move.getFromLoc().x][move.getFromLoc().y].setPiece(null);
                 Game.black_player.updatePieces(move.getPiece(), move.getToLoc().x, move.getToLoc().y);
                 Game.movethePiece(move);
-
                 
-               // Game.movethePiece(Game.theMove);
+              //  Game.allAvailbleMovesForBlackPieces();
+//                Game.minimax(0, Game.white_player);
+//                PieceMove moveminimax = Game.theMove;
+//
+//                Game.movethePiece(Game.theMove);
+//
+//                Game.white_player.showMyPieces();
 
-                Game.white_player.showMyPieces();
-
-                
                 if (Game.hasBlackPlayerWon()) {
                     JOptionPane.showMessageDialog(null, "Game Over ,You has Losed");
                 };

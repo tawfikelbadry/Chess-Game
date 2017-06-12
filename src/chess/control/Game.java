@@ -14,13 +14,12 @@ import chess.Game.TYPE;
 import chess.Pieces.Piece;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author tito
  */
+
 public class Game {
 
     public static Player white_player = new Player(false);
@@ -140,7 +139,9 @@ public class Game {
                         if (squares[k][j].getPiece() != null) {
                             cur_value = squares[k][j].getPiece().getValue();
                         }
-                        availableMoves.add(new PieceMove(currentP, from, to, cur_value));
+                        PieceMove cur_move = new PieceMove(currentP, from, to, cur_value);
+                        availableMoves.add(cur_move);
+
                         System.out.print("X");
                     } else {
                         System.out.print("N");
@@ -178,12 +179,25 @@ public class Game {
 
             if (currentMove.getValue() == maxVal) {
                 valubleMoves.add(currentMove);
+
             }
         }
 
         int size = valubleMoves.size();
         return valubleMoves.get((int) (Math.random() * size));
 
+    }
+
+    public static boolean isSaFeMove(PieceMove move) {
+        ArrayList<PieceMove> availablemoves = allAvailbleMovesForPlayer(white_player);
+        for (int i = 0; i < availablemoves.size(); i++) {
+            if (move.getToLoc().x == availablemoves.get(i).getToLoc().x && move.getToLoc().y == availablemoves.get(i).getToLoc().y) {
+
+                return false;
+
+            }
+        }
+        return true;
     }
 
     public static boolean hasWhitePlayerWon() {
@@ -239,7 +253,8 @@ public class Game {
                 }
                 if (currentScore == 900) {
 
-                    squares[move.getFromLoc().x][move.getFromLoc().y].setPiece(move.getPiece());
+//                    squares[move.getFromLoc().x][move.getFromLoc().y].setPiece(move.getPiece());
+                    revertmovePiece(move, player);
 
                     break;
 
@@ -255,80 +270,21 @@ public class Game {
                 int currentScore = minimax(depth + 1, white_player);
                 min = Math.min(currentScore, min);
                 if (min == -900) {
-                    squares[move.getFromLoc().x][move.getFromLoc().y].setPiece(move.getPiece());
+//                    squares[move.getFromLoc().y][move.getFromLoc().y].setPiece(move.getPiece());
+                    revertmovePiece(move, player);
 
                     break;
                 }
 
             }
-            squares[move.getFromLoc().x][move.getFromLoc().y].setPiece(move.getPiece());
+//            squares[move.getFromLoc().x][move.getFromLoc().y].setPiece(move.getPiece());
+            revertmovePiece(move, player);
 
         }
 
         return player == white_player ? max : min;
     }
 
-//     public int minimax(int depth, int turn) {
-//        if (hasPlayerWon(PLAYER_X)) {
-//            return 1;
-//        }
-//        if (hasPlayerWon(PLAYER_O)) {
-//            return -1;
-//        }
-//
-//        List<Point> availableCells = getAvalableCells();
-//        System.out.println("size : "+availableCells.size());
-//        if (availableCells.isEmpty()) {
-//            return 0;
-//        }
-//
-//        int min = Integer.MAX_VALUE;
-//        int max = Integer.MIN_VALUE;
-//
-//        for (int i = 0; i < availableCells.size(); i++) {
-////            System.out.println("size : "+availableCells.size()+" count : "+o++);
-//            Point point = availableCells.get(i);
-//            if (turn == PLAYER_X) {
-//                movePlace(point, PLAYER_X);
-////                System.out.println("depth : "+depth);
-//                int currentScore = minimax(depth + 1, PLAYER_O );
-//                max = Math.max(currentScore, max);
-//                if (depth == 0) {
-//                    System.out.println("computer score for position " + point + " = " + currentScore);
-//                }
-//                if (currentScore >= 0) {
-//                    if (depth == 0) {
-//                        computerMove = point;
-//                    }
-//                }
-//                if (currentScore == 1) {
-//                    board[point.getX()][point.getY()] = NO_PLAYER;
-//                    break;
-//
-//                }
-//                if (i == availableCells.size() - 1 && max < 0) {
-//                    if (depth == 0) {
-//                        computerMove = point;
-//                    }
-//                }
-//
-//            } else if (turn == PLAYER_O) {
-//                movePlace(point, PLAYER_O);
-//                int currentScore = minimax(depth + 1, PLAYER_X);
-//                min = Math.min(currentScore, min);
-//                if (min == -1) {
-//
-//                    board[point.getX()][point.getY()] = NO_PLAYER;
-//                    break;
-//                }
-//
-//            }
-//            board[point.getX()][point.getY()] = NO_PLAYER;
-//
-//        }
-//
-//        return turn == PLAYER_X ? max : min;
-//    }
     /// this code used to move piece and commit all changes occur
     public static void movethePiece(PieceMove move) {
         boolean isremoved = Game.white_player.removePiece(squares[move.getToLoc().x][move.getToLoc().y].getPiece());
@@ -341,4 +297,41 @@ public class Game {
         Game.black_player.updatePieces(move.getPiece(), move.getToLoc().x, move.getToLoc().y);
 
     }
+
+    public static void movethePieceForPlayer(PieceMove move, Player player) {
+        boolean isremoved;
+        if (player.isBlack()) {
+            isremoved = white_player.removePiece(squares[move.getToLoc().x][move.getToLoc().y].getPiece());
+        } else {
+            isremoved = black_player.removePiece(squares[move.getToLoc().x][move.getToLoc().y].getPiece());
+
+        }
+        System.out.println("removed " + isremoved);
+        squares[move.getFromLoc().x][move.getFromLoc().y].setPiece(move.getPiece());
+        squares[move.getFromLoc().x][move.getFromLoc().y].setSquareImage(move.getPiece().getImg());
+        squares[move.getToLoc().x][move.getToLoc().y].removeImage();
+
+        squares[move.getToLoc().x][move.getToLoc().y].setPiece(null);
+        player.updatePieces(move.getPiece(), move.getFromLoc().x, move.getFromLoc().y);
+
+    }
+
+    public static void revertmovePiece(PieceMove move, Player player) {
+        boolean isremoved;
+        if (player.isBlack()) {
+            isremoved = white_player.removePiece(squares[move.getToLoc().x][move.getToLoc().y].getPiece());
+        } else {
+            isremoved = black_player.removePiece(squares[move.getToLoc().x][move.getToLoc().y].getPiece());
+
+        }
+        System.out.println("removed " + isremoved);
+        squares[move.getFromLoc().x][move.getFromLoc().y].setPiece(move.getPiece());
+        squares[move.getFromLoc().x][move.getFromLoc().y].setSquareImage(move.getPiece().getImg());
+        squares[move.getToLoc().x][move.getToLoc().y].removeImage();
+
+        squares[move.getToLoc().x][move.getToLoc().y].setPiece(null);
+        player.updatePieces(move.getPiece(), move.getFromLoc().x, move.getFromLoc().y);
+
+    }
+
 }
